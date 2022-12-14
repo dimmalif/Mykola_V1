@@ -1,5 +1,4 @@
 import webbrowser
-
 import youtube_dl
 from ytmusicapi import YTMusic
 
@@ -18,37 +17,45 @@ def search_music(requests, ydl_opts=None):
 
     ids = [search_results[i]['browseId'] for i in range(len(search_results))]
 
+
     albums = [yt.get_album(browseId=ids[i]) for i in range(len(ids))]
-
+    print(albums)
     audio_playlist_id = [i['audioPlaylistId'] for i in albums]
+    vidos_ids = [i['tracks']['videoId'] for i in albums]
+    print(vidos_ids)
 
-    links = f'https://music.youtube.com/watch?v=&list={audio_playlist_id[0]}'
+    links = f'https://music.youtube.com/watch?v={audio_playlist_id[0]}'
 
     print('download')
-
-    sound_list.append(links)
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download(sound_list)
-
     return links
 
 
-search_music(req)
 
 
+def run(link):
+    video_info = youtube_dl.YoutubeDL().extract_info(url=link, download=False)
+    filename = f"{video_info['title']}.mp3"
+    options={
+        'format': 'bestaudio/best',
+        'keepvideo': False,
+        'outtmpl': filename,
+    }
 
+    with youtube_dl.YoutubeDL(options) as ydl:
+        ydl.download([video_info['webpage_url']])
 
+    print("Download complete... {}".format(filename))
 
-
-
-
-
-
-
-
-
-
-
+run('https://music.youtube.com/watch?v=tjIwXKPGf80')
+# region ...
+# def download_sound(links):
+#     sound_list = []
+#     sound_list.append(links)
+#     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+#         ydl.download(sound_list)
+#
+#
+# search_music(req)
 
 # def download_music(links=None, ydl_opts=None):
 #     sound_list = []
@@ -60,14 +67,6 @@ search_music(req)
 #
 #
 # download_music()
-
-
-
-
-
-
-
-
 
 
 #     print('start')
@@ -87,5 +86,4 @@ search_music(req)
 #     video = VideoFileClip(os.path.join(save_link, name + '.mp4'))
 #     video.audio.write_audiofile(os.path.join(final_link, final_link, name + '.mp3'))
 #     return print('saved successful')
-
-
+# endregion
