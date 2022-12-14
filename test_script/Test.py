@@ -7,35 +7,58 @@ download_file = 'C:/Users/Dmytro/Desktop/Mykola_V1/bin/test_script/Failed.txt'
 
 req = 'ThePrettyReckless'
 
-test_url = 'https://music.youtube.com/watch?v=XqmknZNg1yw&list=OLAK5uy_kTy5eFLo2vzxnraeFGcyOIjJRS8nx45BA'
+
+# region trash class
+# # class Work_with_music:
+# #
+# #     def __init__(self, path, file, requests):
+# #         self.path = path
+# #         self.file = file
+# #         self.requests = requests
+# #
+# #     def search_music(self):
+# #         yt = YTMusic()
+# #         search_results = yt.search(requests, filter='albums')
+# #
+# #         ids = [search_results[i]['browseId'] for i in range(len(search_results))]
+# #
+# #         albums = [yt.get_album(browseId=ids[i]) for i in range(len(ids))]
+# #
+# #         audio_playlist_id = [i['audioPlaylistId'] for i in albums]
+# #
+# #         links = f'https://music.youtube.com/watch?v=&list={audio_playlist_id[0]}'
+# #         webbrowser.open(links)
+# #         print(links)
+# #         return links
+#
+#
+# pass
 
 
-def search_music(requests, ydl_opts=None):
-    sound_list = []
+# endregion
+
+
+# region work functions
+def search_music(requests):
     yt = YTMusic()
     search_results = yt.search(requests, filter='albums')
 
     ids = [search_results[i]['browseId'] for i in range(len(search_results))]
 
-
     albums = [yt.get_album(browseId=ids[i]) for i in range(len(ids))]
-    print(albums)
+
     audio_playlist_id = [i['audioPlaylistId'] for i in albums]
-    vidos_ids = [i['tracks']['videoId'] for i in albums]
-    print(vidos_ids)
 
-    links = f'https://music.youtube.com/watch?v={audio_playlist_id[0]}'
-
-    print('download')
+    links = f'https://music.youtube.com/watch?v=&list={audio_playlist_id[0]}'
+    webbrowser.open(links)
+    print(links)
     return links
-
-
 
 
 def run(link):
     video_info = youtube_dl.YoutubeDL().extract_info(url=link, download=False)
     filename = f"{video_info['title']}.mp3"
-    options={
+    options = {
         'format': 'bestaudio/best',
         'keepvideo': False,
         'outtmpl': filename,
@@ -46,8 +69,11 @@ def run(link):
 
     print("Download complete... {}".format(filename))
 
-run('https://music.youtube.com/watch?v=tjIwXKPGf80')
-# region ...
+
+# endregion
+run(search_music(req))
+
+# region trash download
 # def download_sound(links):
 #     sound_list = []
 #     sound_list.append(links)
