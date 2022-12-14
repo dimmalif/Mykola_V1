@@ -10,6 +10,3 @@ def speak(text):
     winsound.PlaySound('test.wav', winsound.SND_ALIAS)
 
 
-speak('Тестове р+еченн+я ')
-
-
