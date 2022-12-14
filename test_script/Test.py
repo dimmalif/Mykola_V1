@@ -39,20 +39,30 @@ req = 'ThePrettyReckless'
 
 
 # region work functions
-def search_music(requests):
+def search_music_albums(requests):
+    all_links = []
     yt = YTMusic()
     search_results = yt.search(requests, filter='albums')
-
     ids = [search_results[i]['browseId'] for i in range(len(search_results))]
-
     albums = [yt.get_album(browseId=ids[i]) for i in range(len(ids))]
-
+    print(albums)
     audio_playlist_id = [i['audioPlaylistId'] for i in albums]
 
-    links = f'https://music.youtube.com/watch?v=&list={audio_playlist_id[0]}'
-    webbrowser.open(links)
-    print(links)
-    return links
+#region трохи говнокоду
+    lst = [i for i in range(len(audio_playlist_id))]
+    audio_playlist_dictionary = dict(zip(audio_playlist_id, lst))
+    print(audio_playlist_dictionary)
+
+    first_links = f'https://music.youtube.com/watch?v=&list={audio_playlist_id[0]}'
+
+    for i in audio_playlist_dictionary:
+        all_links.append(f'https://music.youtube.com/watch?v=&list={audio_playlist_dictionary[i]}')
+    print(all_links)
+#endregion
+
+    webbrowser.open(first_links)
+    print(first_links)
+    return first_links
 
 
 def run(link):
@@ -71,7 +81,7 @@ def run(link):
 
 
 # endregion
-run(search_music(req))
+search_music_albums(req)
 
 # region trash download
 # def download_sound(links):
