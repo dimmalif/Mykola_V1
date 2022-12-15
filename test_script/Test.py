@@ -1,41 +1,14 @@
+import os
+import re
 import webbrowser
 import youtube_dl
+from moviepy.editor import *
 from ytmusicapi import YTMusic
 
 download_path = 'C:/Users/Dmytro/Desktop/Mykola_V1/bin/test_script'
 download_file = 'C:/Users/Dmytro/Desktop/Mykola_V1/bin/test_script/Failed.txt'
 
-req = 'The pretty rekless '
-
-
-# region trash class
-# # class Work_with_music:
-# #
-# #     def __init__(self, path, file, requests):
-# #         self.path = path
-# #         self.file = file
-# #         self.requests = requests
-# #
-# #     def search_music(self):
-# #         yt = YTMusic()
-# #         search_results = yt.search(requests, filter='albums')
-# #
-# #         ids = [search_results[i]['browseId'] for i in range(len(search_results))]
-# #
-# #         albums = [yt.get_album(browseId=ids[i]) for i in range(len(ids))]
-# #
-# #         audio_playlist_id = [i['audioPlaylistId'] for i in albums]
-# #
-# #         links = f'https://music.youtube.com/watch?v=&list={audio_playlist_id[0]}'
-# #         webbrowser.open(links)
-# #         print(links)
-# #         return links
-#
-#
-# pass
-
-
-# endregion
+req = 'пневмослон'
 
 
 # region work functions
@@ -45,80 +18,67 @@ def search_music_albums(requests):
     search_results_albums = yt.search(requests, filter='albums')
     ids = [search_results_albums[i]['browseId'] for i in range(len(search_results_albums))]
     albums = [yt.get_album(browseId=ids[i]) for i in range(len(ids))]
-    #print(albums)
+    # print(albums)
     audio_playlist_id = [i['audioPlaylistId'] for i in albums]
     first_links = f'https://music.youtube.com/watch?v=&list={audio_playlist_id[0]}'
 
     # region трохи говнокоду
     lst = [i for i in range(len(audio_playlist_id))]
     audio_playlist_dictionary = dict(zip(audio_playlist_id, lst))
-    #print(audio_playlist_dictionary)
+    # print(audio_playlist_dictionary)
 
     for i in audio_playlist_dictionary:
         all_links.append(f'https://music.youtube.com/watch?v=&list={audio_playlist_dictionary[i]}')
-    #print(all_links)
+    # print(all_links)
     # endregion
 
-    #webbrowser.open(first_links)
-    #print(first_links)
+    # webbrowser.open(first_links)
+    # print(first_links)
     return first_links
 
 
 def run(link):
+
+    flag_renamed = False
+    save_link = ('C:/Users/Dmytro/Desktop/Mykola_V1/bin/test_script')
+
+    regxp = '[\w-]+[\w:]'
+    result = re.findall(regxp, save_link)
+    final_link = '\\\\'.join(result)
+
     video_info = youtube_dl.YoutubeDL().extract_info(url=link, download=False)
+
     filename = f"{video_info['title']}.mp3"
-    print(video_info['title'])
+    print(filename)
     options = {
-        'format': 'bestaudio/best',
-        'ffmpeg': True
+        'keepvideo': False
+
     }
 
-    #with youtube_dl.YoutubeDL(options) as ydl:
-        #ydl.download([video_info['webpage_url']])
+    name = []
+    for i in range(len(video_info['entries'])):
+        name.append(f"{video_info['entries'][i]['title']}-{video_info['entries'][i]['id']}")
 
-    #print("Download complete... {}".format(filename))
+    print(name)
 
+    # with youtube_dl.YoutubeDL(options) as ydl:
+    #     ydl.download([video_info['webpage_url']])
 
-# endregion
+    try:
+        for i in range(len(name)):
+            video = VideoFileClip(os.path.join(save_link, name[i] + '.mp4'))
+            video.audio.write_audiofile(os.path.join(final_link, final_link, name[i] + '.mp3'))
+
+        #flag_renamed = True
+
+    except OSError:
+        print('track has been download,but not renamed in mp3')
+
+    # if flag_renamed:
+    #     for i in range(len(name)):
+    #         os.remove(f"{name[i]}.mp4")
+    #         print(f"removed {name[i]}")
+
 run(search_music_albums(req))
 
-# region trash download
-# def download_sound(links):
-#     sound_list = []
-#     sound_list.append(links)
-#     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-#         ydl.download(sound_list)
-#
-#
-# search_music(req)
-
-# def download_music(links=None, ydl_opts=None):
-#     sound_list = []
-#     search_music(req)
-#     sound_list.append(links)
-#
-#     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-#         ydl.download(sound_list)
-#
-#
-# download_music()
-
-
-#     print('start')
-#     search_music(requests)
-#     print('searching')
-#     #links = 'https://www.youtube.com/watch?v=DN1oho8kVP4&ab_channel=%D0%91%D1%8B%D1%82%D1%8C%D0%98%D0%BD%D0%B4%D0%B8%28%D0%B8%D0%BD%D0%B4%D0%B8%D0%B8%D0%B3%D1%80%D1%8B%29'
-#     print('get save link')
-#     save_link = ('C:/Users/Dmytro/Desktop/Mykola_V1/bin/test_script')
-#     result = re.findall(save_link)
-#     final_link = '\\\\'.join(result)
-#     print('create name')
-#     name = YouTube(links).title
-#     print('Сохраняем видео...', name)
-#     video_for = YouTube(links).streams.first()
-#     video_for.download(final_link)
-#     print('Видео сохранено... \n Конвертируем в .mp3')
-#     video = VideoFileClip(os.path.join(save_link, name + '.mp4'))
-#     video.audio.write_audiofile(os.path.join(final_link, final_link, name + '.mp3'))
-#     return print('saved successful')
 # endregion
