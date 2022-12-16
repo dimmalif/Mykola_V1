@@ -33,23 +33,29 @@ def search_music_albums(requests):
 
 
 def download_albums(link, save_link):
-    regxp = '[\w-]+[\w:]'
-    name = []
+
     options = {'keepvideo': False}
 
     video_info = youtube_dl.YoutubeDL().extract_info(url=link, download=False)
 
-    # with youtube_dl.YoutubeDL(options) as ydl:
-    #     ydl.download([video_info['webpage_url']])
+    with youtube_dl.YoutubeDL(options) as ydl:
+        ydl.download([video_info['webpage_url']])
 
-    result = re.findall(regxp, save_link)
-    final_link = '\\\\'.join(result)
-    for i in range(len(video_info['entries'])):
-        name.append(f"{video_info['entries'][i]['title']}-{video_info['entries'][i]['id']}")
 
-    for i in range(len(name)):
-        video = VideoFileClip(os.path.join(save_link, name[i] + '.mp4'))
-        video.audio.write_audiofile(os.path.join(final_link, final_link, name[i] + '.mp3'))
+    def renamed():
+        regxp = '[\w-]+[\w:]'
+        name = []
+
+        result = re.findall(regxp, save_link)
+        final_link = '\\\\'.join(result)
+        for i in range(len(video_info['entries'])):
+            name.append(f"{video_info['entries'][i]['title']}-{video_info['entries'][i]['id']}")
+
+        for i in range(len(name)):
+            video = VideoFileClip(os.path.join(save_link, name[i] + '.mp4'))
+            video.audio.write_audiofile(os.path.join(final_link, final_link, name[i] + '.mp3'))
+
+    renamed()
 
 
 
