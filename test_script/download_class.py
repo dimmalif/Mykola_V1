@@ -67,7 +67,7 @@ class Work_with_music:
         for i in range(len(self.name)):
             video = VideoFileClip(os.path.join(self.save_link, self.name[i] + '.mp4'))
             video.audio.write_audiofile(os.path.join(final_link, final_link, self.name[i] + '.mp3'))
-            fileinput.close()
+            video.close()
 
 
         return print('renamed is successful')
@@ -86,7 +86,7 @@ class Work_with_music:
 
 res = Work_with_music(req, path)
 res.download_first_albums()
-# res.delete_mp4()
+res.delete_mp4()
 
 # res.search_music_albums()
 # res.open_first_link_with_first_album()
