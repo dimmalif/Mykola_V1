@@ -24,12 +24,13 @@ def search_music_albums(requests):
 
     lst = [i for i in range(len(audio_playlist_id))]
     audio_playlist_dictionary = dict(zip(audio_playlist_id, lst))
+    list_all_links = (list(audio_playlist_dictionary))
+    for i in range(len(list_all_links)):
+        list(audio_playlist_dictionary)
+        all_links.append(f'https://music.youtube.com/watch?v=&list={list_all_links[i]}')
+        print(all_links)
 
-    for i in audio_playlist_dictionary:
-        all_links.append(f'https://music.youtube.com/watch?v=&list={audio_playlist_dictionary[i]}')
-
-    # webbrowser.open(first_links)
-    return first_links
+    return all_links
 
 
 def download_albums(link, save_link):
@@ -58,13 +59,8 @@ def download_albums(link, save_link):
     renamed()
 
 
-
-download_albums(search_music_albums(req), download_path)
-
+search_music_albums(req)
 # removed_algoritm
 # if flag_renamed:
-#     for i in range(len(name)):
-#         os.remove(f"{name[i]}.mp4")
-#         print(f"removed {name[i]}")
 
 # endregion

@@ -1,3 +1,4 @@
+import fileinput
 import os
 import re
 import webbrowser
@@ -6,17 +7,17 @@ from moviepy.editor import *
 from ytmusicapi import YTMusic
 
 path = 'C:/Users/Dmytro/Desktop/Mykola_V1/bin/test_script'
-file = 'C:/Users/Dmytro/Desktop/Mykola_V1/bin/test_script/Failed.txt'
 
-req = 'system of a down'
+req = 'daron malakian'
 
 
 class Work_with_music:
-    def __init__(self, requests):
+    def __init__(self, requests, save_link):
         self.requests = requests
-        self.all_links = []
+        self.save_link = save_link
 
     def search_music_albums(self):
+        self.all_links = []
         yt = YTMusic()
         search_results_albums = yt.search(self.requests, filter='albums')
         ids = [search_results_albums[i]['browseId'] for i in range(len(search_results_albums))]
@@ -28,13 +29,11 @@ class Work_with_music:
         lst = [i for i in range(len(audio_playlist_id))]
 
         audio_playlist_dictionary = dict(zip(audio_playlist_id, lst))
-        for i in audio_playlist_dictionary:
-            self.all_links.append(f'https://music.youtube.com/watch?v=&list={audio_playlist_dictionary[i]}')
+        for i in range(len(list(audio_playlist_dictionary))):
+            self.all_links.append(f'https://music.youtube.com/watch?v=&list={list(audio_playlist_dictionary)[i]}')
 
-        return first_links
+    def download_first_albums(self):
 
-    def download_albums(self, save_link):
-        self.save_link = save_link
         self.search_music_albums()
         options = {'keepvideo': False}
         video_info = youtube_dl.YoutubeDL().extract_info(url=self.first_links, download=False)
@@ -44,35 +43,54 @@ class Work_with_music:
 
         self.renamed_downloads_file()
 
+    def download_all_albums(self):
+        self.search_music_albums()
+        options = {'keepvideo': False}
+        for i in self.all_links:
+            #print(f"'Download albums:'{}")
+            video_info = youtube_dl.YoutubeDL().extract_info(url=i, download=False)
+            self.video_info = video_info
+            with youtube_dl.YoutubeDL(options) as ydl:
+                ydl.download([video_info['webpage_url']])
+        self.renamed_downloads_file()
+
     def renamed_downloads_file(self):
         regxp = '[\w-]+[\w:]'
+        self.name = []
 
-        name = []
         result = re.findall(regxp, self.save_link)
         final_link = '\\\\'.join(result)
 
         for i in range(len(self.video_info['entries'])):
-            name.append(f"{self.video_info['entries'][i]['title']}-{self.video_info['entries'][i]['id']}")
-
-        for i in range(len(name)):
-            video = VideoFileClip(os.path.join(self.save_link, name[i] + '.mp4'))
-            video.audio.write_audiofile(os.path.join(final_link, final_link, name[i] + '.mp3'))
-        self.name = name
-
-        return True
-
-    def delete_mp4(self):
+            self.name.append(f"{self.video_info['entries'][i]['title']}-{self.video_info['entries'][i]['id']}")
 
         for i in range(len(self.name)):
+            video = VideoFileClip(os.path.join(self.save_link, self.name[i] + '.mp4'))
+            video.audio.write_audiofile(os.path.join(final_link, final_link, self.name[i] + '.mp3'))
+            fileinput.close()
+
+
+        return print('renamed is successful')
+
+    #костиль
+    def open_first_link_with_first_album(self):
+        webbrowser.open(self.first_links)
+
+    def delete_mp4(self):
+        print('start delete')
+        for i in range(len(self.name)):
+            fileinput.close()
             os.remove(f"{self.name[i]}.mp4")
             print(f"removed {self.name[i]}")
 
 
-res = Work_with_music(req)
-webbrowser.open(res.search_music_albums())
+res = Work_with_music(req, path)
+res.download_first_albums()
+# res.delete_mp4()
+
+# res.search_music_albums()
+# res.open_first_link_with_first_album()
 # print('IF:')
-# if res_download:
-#     res.delete_mp4()
 # else: print('NOT DONE')
 # Work_with_music(req).
 # work = Work_with_music(req)
