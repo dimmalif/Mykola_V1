@@ -8,13 +8,14 @@ from ytmusicapi import YTMusic
 path = 'C:/Users/Dmytro/Desktop/Mykola_V1/bin/test_script'
 file = 'C:/Users/Dmytro/Desktop/Mykola_V1/bin/test_script/Failed.txt'
 
-req = 'пневмослон'
+req = 'system of a down'
 
 
 class Work_with_music:
     def __init__(self, requests):
         self.requests = requests
         self.all_links = []
+
     def search_music_albums(self):
         yt = YTMusic()
         search_results_albums = yt.search(self.requests, filter='albums')
@@ -30,6 +31,7 @@ class Work_with_music:
         for i in audio_playlist_dictionary:
             self.all_links.append(f'https://music.youtube.com/watch?v=&list={audio_playlist_dictionary[i]}')
 
+        return first_links
 
     def download_albums(self, save_link):
         self.save_link = save_link
@@ -59,21 +61,20 @@ class Work_with_music:
 
         return True
 
-
     def delete_mp4(self):
 
         for i in range(len(self.name)):
             os.remove(f"{self.name[i]}.mp4")
             print(f"removed {self.name[i]}")
 
-res = Work_with_music(req)
 
-res_download = res.download_albums(path)
-print('IF:')
-if res_download:
-    res.delete_mp4()
-else: print('NOT DONE')
-#Work_with_music(req).
+res = Work_with_music(req)
+webbrowser.open(res.search_music_albums())
+# print('IF:')
+# if res_download:
+#     res.delete_mp4()
+# else: print('NOT DONE')
+# Work_with_music(req).
 # work = Work_with_music(req)
 # link = work.search_music_albums()
 # download = Work_with_music.download_albums(work, first_links=link)
