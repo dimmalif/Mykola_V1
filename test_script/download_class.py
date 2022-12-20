@@ -55,21 +55,36 @@ class Search_music:
     def browser_open(self):
         webbrowser.open(self.to_open)
 
-class Work_with_file(Search_music):
-    def __init__(self, requests, save_link):
-        super().__init__(requests, save_link)
-
 
 # 1)перевести перевірку та реформатування у окремий клас 2) оптимізувати клас(постійно прописується схожий код)
-class Downloader_music(Search_music, Work_with_file):
+class Downloader_music(Search_music):
     def __init__(self, requests, save_link):
         super().__init__(requests, save_link)
-        self.video_info = None
+
         self.not_found_file = None
         self.file_list = []
         self.name = []
 
         self.search_music_albums()
+
+    def download_first_albums(self):
+        self.video_info = youtube_dl.YoutubeDL().extract_info(url=self.to_open, download=False)
+
+        if not self.check_file():
+            self.renamed_downloads_file()
+            return 0
+
+        with youtube_dl.YoutubeDL(self.options) as ydl:
+            ydl.download([self.video_info['webpage_url']])
+        self.renamed_downloads_file()
+
+    def download_all_albums(self):
+        for i in self.all_links:
+            # print(f"'Download albums:'{}") НЕ В ТОПКУ!
+            self.video_info = youtube_dl.YoutubeDL().extract_info(url=i, download=False)
+            with youtube_dl.YoutubeDL(self.options) as ydl:
+                ydl.download([self.video_info['webpage_url']])
+        self.renamed_downloads_file()
 
     def check_file(self):
         for i in range(len(self.video_info['entries'])):
@@ -104,28 +119,11 @@ class Downloader_music(Search_music, Work_with_file):
             os.remove(f"{self.name[i]}.mp4")
             print(f"removed {self.name[i]}")
 
-    def download_first_albums(self):
-        self.video_info = youtube_dl.YoutubeDL().extract_info(url=self.to_open, download=False)
 
-        if not self.check_file():
-            self.renamed_downloads_file()
-            return 0
+class Work_with_file(Downloader_music):
+    def __init__(self, requests, save_link):
+        super().__init__(requests, save_link)
 
-        with youtube_dl.YoutubeDL(self.options) as ydl:
-            ydl.download([self.video_info['webpage_url']])
-        self.renamed_downloads_file()
 
-    def download_all_albums(self):
-        for i in self.all_links:
-            # print(f"'Download albums:'{}") НЕ В ТОПКУ!
-            video_info = youtube_dl.YoutubeDL().extract_info(url=i, download=False)
-            self.video_info = video_info
-            with youtube_dl.YoutubeDL(self.options) as ydl:
-                ydl.download([video_info['webpage_url']])
-        self.renamed_downloads_file()
-
-    # def download_top_result(self):
-    #     self.search_top_result()
 
 r = Search_music(req, path).search_music_albums()
-
