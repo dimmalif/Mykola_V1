@@ -2,6 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/models" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/test_script/youtube-dl" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/wav2vec2-xls-r-300m-uk-with-wiki-lm" vcs="Git" />
   </component>
 </project>

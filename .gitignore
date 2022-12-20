@@ -1,4 +1,6 @@
 ukrainian_tts/
+models/
 model.pth
 *mp3
 *mp4
+*wav

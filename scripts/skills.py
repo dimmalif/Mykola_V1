@@ -34,9 +34,9 @@ def open_tabs(text=None):
     webbrowser.open(tab.get_link_google())
 
 
-def send_to_arduino(text=None):
-    command = Arduino(text)
-    command.send_to_arduino()
+# def send_to_arduino(text=None):
+#     command = Arduino(text)
+#     command.send_to_arduino()
 
 
 def passive(text=None):

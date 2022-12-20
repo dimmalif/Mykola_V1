@@ -8,7 +8,7 @@ from scripts.live_asr import LiveWav2Vec2
 from scripts.skills import *
 from scripts.voice import speak
 
-from test_script.Test import *
+
 
 #model = 'C:/Mykola_V1/models/wav2vec2-xls-r-300m-uk-with-small-lm-noisy'
 model = 'C:/Users/Dmytro/Desktop/Mykola_V1/models'
@@ -39,7 +39,7 @@ def current_data(vectorizer, clf):
 
 def main():
     # arduino_control.connect_to_arduino()
-    speak('Здоров')
+    speak('Салам пополам')
     vectorizer = CountVectorizer()
     vectors = vectorizer.fit_transform(list(words.data_set.keys()))
     clf = LogisticRegression()
