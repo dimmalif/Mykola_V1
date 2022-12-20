@@ -60,7 +60,6 @@ class Work_with_file(Search_music):
         super().__init__(requests, save_link)
 
 
-
 # 1)перевести перевірку та реформатування у окремий клас 2) оптимізувати клас(постійно прописується схожий код)
 class Downloader_music(Search_music, Work_with_file):
     def __init__(self, requests, save_link):
@@ -69,7 +68,41 @@ class Downloader_music(Search_music, Work_with_file):
         self.not_found_file = None
         self.file_list = []
         self.name = []
+
         self.search_music_albums()
+
+    def check_file(self):
+        for i in range(len(self.video_info['entries'])):
+            self.name.append(f"{self.video_info['entries'][i]['title']}-{self.video_info['entries'][i]['id']}")
+
+        try:
+            for i in range(len(self.name)):
+                f = open(f"{self.name[i]}.mp4")
+                f.close()
+                self.file_list.append(self.name[i])
+            return False
+        except FileNotFoundError:
+            self.not_found_file = list(set(self.name).difference(self.file_list))
+            return True
+
+    def renamed_downloads_file(self):
+        regxp = '[\w-]+[\w:]'
+        result = re.findall(regxp, self.save_link)
+        final_link = '\\\\'.join(result)
+
+        for i in range(len(self.name)):
+            video = VideoFileClip(os.path.join(self.save_link, self.name[i] + '.mp4'))
+            video.audio.write_audiofile(os.path.join(final_link, final_link, self.name[i] + '.mp3'))
+            video.close()
+
+        return print('renamed is successful')
+
+    def delete_mp4(self):
+        print('start delete')
+        for i in range(len(self.name)):
+            fileinput.close()
+            os.remove(f"{self.name[i]}.mp4")
+            print(f"removed {self.name[i]}")
 
     def download_first_albums(self):
         self.video_info = youtube_dl.YoutubeDL().extract_info(url=self.to_open, download=False)
