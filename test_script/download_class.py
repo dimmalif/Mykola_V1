@@ -37,9 +37,7 @@ class Search_music:
         audio_playlist_id = [i['audioPlaylistId'] for i in albums]
 
         # getting a link to the first album
-
         self.to_open = f'https://music.youtube.com/watch?v=&list={audio_playlist_id[0]}'
-
 
         # getting a link to the all albums
         lst = [i for i in range(len(audio_playlist_id))]
@@ -57,56 +55,26 @@ class Search_music:
     def browser_open(self):
         webbrowser.open(self.to_open)
 
+class Work_with_file(Search_music):
+    def __init__(self, requests, save_link):
+        super().__init__(requests, save_link)
 
-# 1)перевести перевірку та реформатування у окремий клас 2) оптимізувати клас(постійно прописується схожий код
-class Downloader_music(Search_music):
+
+
+# 1)перевести перевірку та реформатування у окремий клас 2) оптимізувати клас(постійно прописується схожий код)
+class Downloader_music(Search_music, Work_with_file):
     def __init__(self, requests, save_link):
         super().__init__(requests, save_link)
         self.video_info = None
         self.not_found_file = None
         self.file_list = []
         self.name = []
-
-    def check_file(self):
-        for i in range(len(self.video_info['entries'])):
-            self.name.append(f"{self.video_info['entries'][i]['title']}-{self.video_info['entries'][i]['id']}")
-
-        try:
-            for i in range(len(self.name)):
-                f = open(f"{self.name[i]}.mp4")
-                f.close()
-                self.file_list.append(self.name[i])
-            return False
-        except FileNotFoundError:
-            self.not_found_file = list(set(self.name).difference(self.file_list))
-            return True
-
-    def renamed_downloads_file(self):
-        regxp = '[\w-]+[\w:]'
-        result = re.findall(regxp, self.save_link)
-        final_link = '\\\\'.join(result)
-
-        for i in range(len(self.name)):
-            video = VideoFileClip(os.path.join(self.save_link, self.name[i] + '.mp4'))
-            video.audio.write_audiofile(os.path.join(final_link, final_link, self.name[i] + '.mp3'))
-            video.close()
-
-        return print('renamed is successful')
-
-    def delete_mp4(self):
-        print('start delete')
-        for i in range(len(self.name)):
-            fileinput.close()
-            os.remove(f"{self.name[i]}.mp4")
-            print(f"removed {self.name[i]}")
+        self.search_music_albums()
 
     def download_first_albums(self):
-        self.search_music_albums()
         self.video_info = youtube_dl.YoutubeDL().extract_info(url=self.to_open, download=False)
 
-        if self.check_file():
-            ...
-        else:
+        if not self.check_file():
             self.renamed_downloads_file()
             return 0
 
@@ -115,7 +83,6 @@ class Downloader_music(Search_music):
         self.renamed_downloads_file()
 
     def download_all_albums(self):
-        self.search_music_albums()
         for i in self.all_links:
             # print(f"'Download albums:'{}") НЕ В ТОПКУ!
             video_info = youtube_dl.YoutubeDL().extract_info(url=i, download=False)
@@ -126,7 +93,6 @@ class Downloader_music(Search_music):
 
     # def download_top_result(self):
     #     self.search_top_result()
-
 
 r = Search_music(req, path).search_music_albums()
 
