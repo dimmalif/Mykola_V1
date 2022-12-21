@@ -1,13 +1,9 @@
-import fileinput
-import os
-import re
-import webbrowser
-import youtube_dl
-from moviepy.editor import *
+import json
 from ytmusicapi import YTMusic
 
 path = 'C:/Users/Dmytro/Desktop/Mykola_V1/bin/test_script'
-
+#filter = 'songs'
+filter = 'albums'
 req = 'княZz'
 
 
@@ -19,111 +15,31 @@ class Search_music:
 
     # change description
 
-    def __init__(self, requests, save_link):
-        self.to_open = None
-        self.top_result = None
-        self.all_links = []
+    def __init__(self, requests, save_link, filter):
         self.requests = requests
         self.save_link = save_link
-        self.options = {'keepvideo': False}
-        self.video_info = youtube_dl.YoutubeDL().extract_info(url=self.to_open, download=False)
+        self.filter = filter
 
-    def search_music_albums(self):
-        self.all_links = []
+    def searcher(self):
         yt = YTMusic()
-        search_results_albums = yt.search(self.requests,
-                                          filter='albums')  # search result for request with a given filter
-        ids = [search_results_albums[i]['browseId'] for i in range(len(search_results_albums))]
-        albums = [yt.get_album(browseId=ids[i]) for i in range(len(ids))]  # getting a name albums
-        audio_playlist_id = [i['audioPlaylistId'] for i in albums]
+        search_results = yt.search(self.requests, filter=self.filter)
 
-        # getting a link to the first album
-        self.to_open = f'https://music.youtube.com/watch?v=&list={audio_playlist_id[0]}'
+        def all_albums():
+            ids = [search_results[i]['browseId'] for i in range(len(search_results))]
+            albums = [yt.get_album(browseId=ids[i]) for i in range(len(ids))]  # getting a name albums
+            audio_playlist_id = [i['audioPlaylistId'] for i in albums]
+            print(audio_playlist_id)
 
-        # getting a link to the all albums
-        lst = [i for i in range(len(audio_playlist_id))]
-        audio_playlist_dictionary = dict(zip(audio_playlist_id, lst))
-        for i in range(len(list(audio_playlist_dictionary))):
-            self.all_links.append(f'https://music.youtube.com/watch?v=&list={list(audio_playlist_dictionary)[i]}')
+        def first_albums():
+            ...
+        method = {
+            'albums': all_albums
+        }
 
-    def search_top_result(self):
-        yt = YTMusic()
-        search_results = yt.search(self.requests)
-        result = search_results[0]['videoId']
-        self.top_result = f'https://music.youtube.com/watch?v={result}'
-        self.to_open = self.top_result
-
-    def browser_open(self):
-        webbrowser.open(self.to_open)
+        method[self.filter]()
+#    def filtering(self):
 
 
-# 1)перевести перевірку та реформатування у окремий клас 2) оптимізувати клас(постійно прописується схожий код)
-class Downloader_music(Search_music):
-    def __init__(self, requests, save_link):
-        super().__init__(requests, save_link)
-        self.work_with_files = Work_with_file(self.requests, self.save_link)
-        self.work_with_files.__init__(requests, save_link)
-        self.not_found_file = None
-        self.file_list = []
-        self.search_music_albums()
 
-    def download_first_albums(self):
-        if not self.work_with_files.check_file():
-            self.work_with_files.renamed_downloads_file()
-            return 0
+r = Search_music(req, path, filter).searcher()
 
-        with youtube_dl.YoutubeDL(self.options) as ydl:
-            ydl.download([self.video_info['webpage_url']])
-        self.work_with_files.renamed_downloads_file()
-
-    def download_all_albums(self):
-        for _ in self.all_links:
-            # print(f"'Download albums:'{}") НЕ В ТОПКУ!
-            with youtube_dl.YoutubeDL(self.options) as ydl:
-                ydl.download([self.video_info['webpage_url']])
-        self.work_with_files.renamed_downloads_file()
-
-
-class Work_with_file(Search_music):
-    def __init__(self, requests, save_link):
-        super().__init__(requests, save_link)
-        self.not_found_file = None
-        self.file_list = None
-        self.name = []
-
-    def check_file(self):
-        for i in range(len(self.video_info['entries'])):
-            self.name.append(f"{self.video_info['entries'][i]['title']}-{self.video_info['entries'][i]['id']}")
-
-        try:
-            for i in range(len(self.name)):
-                f = open(f"{self.name[i]}.mp4")
-                f.close()
-                self.file_list.append(self.name[i])
-            return False
-        except FileNotFoundError:
-            self.not_found_file = list(set(self.name).difference(self.file_list))
-            return True
-
-    def renamed_downloads_file(self):
-        regxp = '[\w-]+[\w:]'
-        result = re.findall(regxp, self.save_link)
-        final_link = '\\\\'.join(result)
-
-        for i in range(len(self.name)):
-            video = VideoFileClip(os.path.join(self.save_link, self.name[i] + '.mp4'))
-            video.audio.write_audiofile(os.path.join(final_link, final_link, self.name[i] + '.mp3'))
-            video.close()
-
-        return print('renamed is successful')
-
-    def delete_mp4(self):
-        print('start delete')
-        for i in range(len(self.name)):
-            fileinput.close()
-            os.remove(f"{self.name[i]}.mp4")
-            print(f"removed {self.name[i]}")
-
-
-r = Downloader_music(req, path)
-r.download_first_albums()

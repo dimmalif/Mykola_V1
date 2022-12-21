@@ -1,5 +1,5 @@
 ukrainian_tts/
-models/
+wav2vec2-xls-r-300m-uk-with-wiki-lm/
 model.pth
 *mp3
 *mp4

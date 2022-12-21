@@ -11,7 +11,7 @@ from scripts.voice import speak
 
 
 #model = 'C:/Mykola_V1/models/wav2vec2-xls-r-300m-uk-with-small-lm-noisy'
-model = 'C:/Users/Dmytro/Desktop/Mykola_V1/models'
+model = 'C:/Users/Dmytro/Desktop/Mykola_V1/bin/wav2vec2-xls-r-300m-uk-with-wiki-lm'
 asr = LiveWav2Vec2(model, device_name="default")
 asr.start()
 
@@ -39,7 +39,7 @@ def current_data(vectorizer, clf):
 
 def main():
     # arduino_control.connect_to_arduino()
-    speak('Салам пополам')
+    speak('Сал+ам попол+ам')
     vectorizer = CountVectorizer()
     vectors = vectorizer.fit_transform(list(words.data_set.keys()))
     clf = LogisticRegression()

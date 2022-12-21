@@ -30,14 +30,15 @@ class Search_music:
     def search_music_albums(self):
         self.all_links = []
         yt = YTMusic()
-        search_results_albums = yt.search(self.requests, filter='albums')  # search result for request with a given filter
+        search_results_albums = yt.search(self.requests,
+                                          filter='albums')  # search result for request with a given filter
         ids = [search_results_albums[i]['browseId'] for i in range(len(search_results_albums))]
         albums = [yt.get_album(browseId=ids[i]) for i in range(len(ids))]  # getting a name albums
         audio_playlist_id = [i['audioPlaylistId'] for i in albums]
 
         # getting a link to the first album
         self.to_open = f'https://music.youtube.com/watch?v=&list={audio_playlist_id[0]}'
-        print(self.to_open)
+
         # getting a link to the all albums
         lst = [i for i in range(len(audio_playlist_id))]
         audio_playlist_dictionary = dict(zip(audio_playlist_id, lst))
