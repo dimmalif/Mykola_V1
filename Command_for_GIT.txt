@@ -22,3 +22,4 @@ git remote add origin https://github.com/dimmalif/Mykola/ - додання ві�
 git branch -M main - перейменування локальної вітки у main згідно з рекомендаціями GitHub
 git push -u origin main - загрузка змін з пк на віддалений репозиторій
 git pull --rebase -загрузка змін з репозиторію на пк з заміною файлів
+git remote remove origin - фікс fatal: remote cloudbees already exists 
