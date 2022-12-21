@@ -2,9 +2,10 @@ import json
 from ytmusicapi import YTMusic
 
 path = 'C:/Users/Dmytro/Desktop/Mykola_V1/bin/test_script'
-#filter = 'songs'
-filter = 'albums'
-req = 'княZz'
+filter_for_search = 'top results'
+#filter = None
+filter = 'videos'
+req = 'samurai trap'
 
 
 class Search_music:
@@ -16,30 +17,44 @@ class Search_music:
     # change description
 
     def __init__(self, requests, save_link, filter):
+        self.top_results = None
+        self.search_results = None
+        self.all_links = []
         self.requests = requests
         self.save_link = save_link
         self.filter = filter
+        self.yt = YTMusic()
 
-    def searcher(self):
-        yt = YTMusic()
-        search_results = yt.search(self.requests, filter=self.filter)
 
-        def all_albums():
-            ids = [search_results[i]['browseId'] for i in range(len(search_results))]
-            albums = [yt.get_album(browseId=ids[i]) for i in range(len(ids))]  # getting a name albums
-            audio_playlist_id = [i['audioPlaylistId'] for i in albums]
-            print(audio_playlist_id)
+    def all_albums(self):
+        self.search_results = self.yt.search(self.requests, filter=self.filter)
+        ids = [self.search_results[i]['browseId'] for i in range(len(self.search_results))]
+        albums = [self.yt.get_album(browseId=ids[i]) for i in range(len(ids))]  # getting a name albums
+        audio_playlist_id = [i['audioPlaylistId'] for i in albums]
+        for i in range(len(audio_playlist_id)):
+            self.all_links.append(f'https://music.youtube.com/watch?v=&list={audio_playlist_id[i]}')
+        print(self.all_links)
 
-        def first_albums():
-            ...
-        method = {
-            'albums': all_albums
-        }
+    def top_result(self):
+        self.search_results = self.yt.search(self.requests, filter=self.filter)
+        result = self.search_results[0]['videoId']
+        self.top_results = f'https://music.youtube.com/watch?v={result}'
+        self.to_open = self.top_result
+        print(self.top_results)
 
-        method[self.filter]()
+    method = {
+        'albums': all_albums,
+        'top result': top_result,
+        'videos': top_result
+    }
+
+    def run(self):
+        self.method[filter]()
+
+#    method[self.filter]()
 #    def filtering(self):
 
+r = Search_music(req, path, filter).run()
 
 
-r = Search_music(req, path, filter).searcher()
 

@@ -125,4 +125,4 @@ class Work_with_file(Downloader_music):
 
 
 
-r = Search_music(req, path).search_music_albums()
+r = Search_music(req, path).search_top_result()
