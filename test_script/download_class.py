@@ -19,12 +19,11 @@ class Search_music:
 
     # change description
 
-    def __init__(self, requests, save_link):
+    def __init__(self, requests):
         self.to_open = None
         self.top_result = None
         self.all_links = []
         self.requests = requests
-        self.save_link = save_link
         self.options = {'keepvideo': False}
 
     def search_music_albums(self):
@@ -47,9 +46,10 @@ class Search_music:
     def search_top_result(self):
         yt = YTMusic()
         search_results = yt.search(self.requests)
-        result = search_results[0]['videoId']
-        self.top_result = f'https://music.youtube.com/watch?v={result}'
-        self.to_open = self.top_result
+        result = search_results
+        # self.top_result = f'https://music.youtube.com/watch?v={result}'
+        # self.to_open = self.top_result
+        print(result)
 
     def browser_open(self):
         webbrowser.open(self.to_open)
@@ -58,8 +58,8 @@ class Search_music:
 # 1)перевести перевірку та реформатування у окремий клас 2) оптимізувати клас(постійно прописується схожий код)
 class Downloader_music(Search_music):
     def __init__(self, requests, save_link):
-        super().__init__(requests, save_link)
-
+        super().__init__(requests)
+        self.save_link = save_link
         self.not_found_file = None
         self.file_list = []
         self.name = []
@@ -80,7 +80,7 @@ class Downloader_music(Search_music):
     def download_all_albums(self):
         for i in self.all_links:
             # print(f"'Download albums:'{}") НЕ В ТОПКУ!
-            self.video_info = youtube_dl.YoutubeDL().extract_info(url=i, download=False)
+            self.video_info = youtube_dl.YoutubeDL().extract_info(url=i, download=True)
             with youtube_dl.YoutubeDL(self.options) as ydl:
                 ydl.download([self.video_info['webpage_url']])
         self.renamed_downloads_file()
@@ -125,4 +125,4 @@ class Work_with_file(Downloader_music):
 
 
 
-r = Search_music(req, path).search_top_result()
+r = Search_music(req).search_top_result()

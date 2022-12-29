@@ -33,33 +33,32 @@ def search_music_albums(requests):
     return all_links
 
 
-def download_albums(link, save_link):
+def download_albums():
 
-    options = {'keepvideo': False}
+    # options = {'keepvideo': False}
+    youtube_dl.YoutubeDL().extract_info('https://music.youtube.com/watch?v=&list=OLAK5uy_lnuToKRbnmYa33HXUwdrVC1zFAeXMgGHE', download=True)
 
-    video_info = youtube_dl.YoutubeDL().extract_info(url=link, download=False)
-
-    with youtube_dl.YoutubeDL(options) as ydl:
-        ydl.download([video_info['webpage_url']])
-
-
-    def renamed():
-        regxp = '[\w-]+[\w:]'
-        name = []
-
-        result = re.findall(regxp, save_link)
-        final_link = '\\\\'.join(result)
-        for i in range(len(video_info['entries'])):
-            name.append(f"{video_info['entries'][i]['title']}-{video_info['entries'][i]['id']}")
-
-        for i in range(len(name)):
-            video = VideoFileClip(os.path.join(save_link, name[i] + '.mp4'))
-            video.audio.write_audiofile(os.path.join(final_link, final_link, name[i] + '.mp3'))
-
-    renamed()
+    # with youtube_dl.YoutubeDL(options) as ydl:
+    #     ydl.download([video_info['webpage_url']])
 
 
-search_music_albums(req)
+    # def renamed():
+    #     regxp = '[\w-]+[\w:]'
+    #     name = []
+    #
+    #     result = re.findall(regxp, save_link)
+    #     final_link = '\\\\'.join(result)
+    #     for i in range(len(video_info['entries'])):
+    #         name.append(f"{video_info['entries'][i]['title']}-{video_info['entries'][i]['id']}")
+    #
+    #     for i in range(len(name)):
+    #         video = VideoFileClip(os.path.join(save_link, name[i] + '.mp4'))
+    #         video.audio.write_audiofile(os.path.join(final_link, final_link, name[i] + '.mp3'))
+    #
+    # renamed()
+
+
+download_albums()
 # removed_algoritm
 # if flag_renamed:
 
